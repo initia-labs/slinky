@@ -272,7 +272,7 @@ func TestDefaultHandler(t *testing.T) {
 		{
 			"invalid alert",
 			slinkyabci.OracleVoteExtension{
-				Prices: map[uint64][]byte{},
+				Prices: map[string][]byte{},
 			},
 			types.PriceBound{
 				High: "1",
@@ -292,7 +292,7 @@ func TestDefaultHandler(t *testing.T) {
 		{
 			"invalid price-bound",
 			slinkyabci.OracleVoteExtension{
-				Prices: map[uint64][]byte{},
+				Prices: map[string][]byte{},
 			},
 			types.PriceBound{
 				High: "1",
@@ -316,7 +316,7 @@ func TestDefaultHandler(t *testing.T) {
 		{
 			"no price report, nil incentive",
 			slinkyabci.OracleVoteExtension{
-				Prices: map[uint64][]byte{},
+				Prices: map[string][]byte{},
 			},
 			types.PriceBound{
 				High: "2",
@@ -340,8 +340,8 @@ func TestDefaultHandler(t *testing.T) {
 		{
 			"if price is higher than high bound, incentive is non-nil",
 			slinkyabci.OracleVoteExtension{
-				Prices: map[uint64][]byte{
-					0: big.NewInt(3).Bytes(),
+				Prices: map[string][]byte{
+					"A/B": big.NewInt(3).Bytes(),
 				},
 			},
 			types.PriceBound{
@@ -372,8 +372,8 @@ func TestDefaultHandler(t *testing.T) {
 		{
 			"if price is lower than low bound, incentive is non-nil",
 			slinkyabci.OracleVoteExtension{
-				Prices: map[uint64][]byte{
-					0: big.NewInt(0).Bytes(),
+				Prices: map[string][]byte{
+					"A/B": big.NewInt(0).Bytes(),
 				},
 			},
 			types.PriceBound{
@@ -404,8 +404,8 @@ func TestDefaultHandler(t *testing.T) {
 		{
 			"if price is within bounds, incentive is nil",
 			slinkyabci.OracleVoteExtension{
-				Prices: map[uint64][]byte{
-					0: big.NewInt(1).Bytes(),
+				Prices: map[string][]byte{
+					"A/B": big.NewInt(1).Bytes(),
 				},
 			},
 			types.PriceBound{
@@ -444,7 +444,7 @@ func TestDefaultHandler(t *testing.T) {
 				},
 				tc.pb,
 				tc.a,
-				tc.id,
+				tc.a.CurrencyPair.String(),
 			)
 
 			// check for expected errors

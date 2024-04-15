@@ -194,8 +194,8 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 	s.Run("returns with single validator, single cp, and vote with price", func() {
 		ve1, err := testutils.CreateExtendedVoteInfo(
 			s.consAddr1,
-			map[uint64][]byte{
-				0: oneHundred.Bytes(),
+			map[string][]byte{
+				"BTC/USD": oneHundred.Bytes(),
 			},
 			s.veCodec,
 		)
@@ -285,7 +285,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 	s.Run("correctly updates with single validator, single cp, and vote extension without the price", func() {
 		ve1, err := testutils.CreateExtendedVoteInfo(
 			s.consAddr1,
-			map[uint64][]byte{},
+			map[string][]byte{},
 			s.veCodec,
 		)
 		s.Require().NoError(err)
@@ -347,8 +347,8 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 
 		ve1, err := testutils.CreateExtendedVoteInfo(
 			s.consAddr1,
-			map[uint64][]byte{
-				0: oneHundred.Bytes(),
+			map[string][]byte{
+				"BTC/USD": oneHundred.Bytes(),
 			},
 			s.veCodec,
 		)
@@ -484,7 +484,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestPreBlocker() {
 
 		ve1, err := testutils.CreateExtendedVoteInfo(
 			s.consAddr1,
-			map[uint64][]byte{},
+			map[string][]byte{},
 			s.veCodec,
 		)
 		s.Require().NoError(err)
@@ -580,8 +580,8 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[uint64][]byte{
-						0: oneHundred.Bytes(),
+					Prices: map[string][]byte{
+						"BTC/USD": oneHundred.Bytes(),
 					},
 				},
 			},
@@ -613,7 +613,7 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[uint64][]byte{},
+					Prices: map[string][]byte{},
 				},
 			},
 		}
@@ -644,10 +644,10 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[uint64][]byte{
-						0: oneHundred.Bytes(),
-						1: oneHundred.Bytes(),
-						2: oneHundred.Bytes(),
+					Prices: map[string][]byte{
+						"BTC/USD": oneHundred.Bytes(),
+						"ETH/USD": oneHundred.Bytes(),
+						"ETH/BTC": oneHundred.Bytes(),
 					},
 				},
 			},
@@ -690,9 +690,9 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[uint64][]byte{
-						0: oneHundred.Bytes(),
-						1: oneHundred.Bytes(),
+					Prices: map[string][]byte{
+						"BTC/USD": oneHundred.Bytes(),
+						"ETH/USD": oneHundred.Bytes(),
 					},
 				},
 			},
@@ -735,16 +735,16 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[uint64][]byte{
-						0: oneHundred.Bytes(),
+					Prices: map[string][]byte{
+						"BTC/USD": oneHundred.Bytes(),
 					},
 				},
 			},
 			{
 				ConsAddress: s.consAddr2,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[uint64][]byte{
-						0: oneHundred.Bytes(),
+					Prices: map[string][]byte{
+						"BTC/USD": oneHundred.Bytes(),
 					},
 				},
 			},
@@ -785,8 +785,8 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[uint64][]byte{
-						0: oneHundred.Bytes(),
+					Prices: map[string][]byte{
+						"BTC/USD": oneHundred.Bytes(),
 					},
 				},
 			},
@@ -827,20 +827,20 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[uint64][]byte{
-						0: oneHundred.Bytes(),
-						1: oneHundred.Bytes(),
-						2: oneHundred.Bytes(),
+					Prices: map[string][]byte{
+						"BTC/USD": oneHundred.Bytes(),
+						"ETH/USD": oneHundred.Bytes(),
+						"ETH/BTC": oneHundred.Bytes(),
 					},
 				},
 			},
 			{
 				ConsAddress: s.consAddr2,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[uint64][]byte{
-						0: oneHundred.Bytes(),
-						1: oneHundred.Bytes(),
-						2: oneHundred.Bytes(),
+					Prices: map[string][]byte{
+						"BTC/USD": oneHundred.Bytes(),
+						"ETH/USD": oneHundred.Bytes(),
+						"ETH/BTC": oneHundred.Bytes(),
 					},
 				},
 			},
@@ -897,18 +897,18 @@ func (s *SLAPreBlockerHandlerTestSuite) TestGetUpdates() {
 			{
 				ConsAddress: s.consAddr1,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[uint64][]byte{
-						0: oneHundred.Bytes(),
-						1: oneHundred.Bytes(),
-						2: oneHundred.Bytes(),
+					Prices: map[string][]byte{
+						"BTC/USD": oneHundred.Bytes(),
+						"ETH/USD": oneHundred.Bytes(),
+						"ETH/BTC": oneHundred.Bytes(),
 					},
 				},
 			},
 			{
 				ConsAddress: s.consAddr2,
 				OracleVoteExtension: oraclevetypes.OracleVoteExtension{
-					Prices: map[uint64][]byte{
-						0: oneHundred.Bytes(),
+					Prices: map[string][]byte{
+						"BTC/USD": oneHundred.Bytes(),
 					},
 				},
 			},

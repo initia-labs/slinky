@@ -35,18 +35,18 @@ var (
 	threeHundred = big.NewInt(300)
 	fourHundred  = big.NewInt(400)
 
-	prices1 = map[uint64][]byte{
-		0: oneHundred.Bytes(),
+	prices1 = map[string][]byte{
+		"BTC/USD": oneHundred.Bytes(),
 	}
-	prices2 = map[uint64][]byte{
-		1: twoHundred.Bytes(),
+	prices2 = map[string][]byte{
+		"ETH/USD": twoHundred.Bytes(),
 	}
-	prices3 = map[uint64][]byte{
-		0: threeHundred.Bytes(),
-		1: fourHundred.Bytes(),
+	prices3 = map[string][]byte{
+		"BTC/USD": threeHundred.Bytes(),
+		"ETH/USD": fourHundred.Bytes(),
 	}
-	malformedPrices = map[uint64][]byte{
-		0: noRizz,
+	malformedPrices = map[string][]byte{
+		"BTC/USD": noRizz,
 	}
 
 	val1 = sdk.ConsAddress("val1")
@@ -443,7 +443,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalRetainOracleData() {
 		cpStrategy := currencypairmocks.NewCurrencyPairStrategy(s.T())
 		cpStrategy.On("GetMaxNumCP", mock.Anything).Return(uint64(0), nil).Once()
 
-		emptyVote, err := testutils.CreateExtendedVoteInfo(val1, map[uint64][]byte{}, veCodec)
+		emptyVote, err := testutils.CreateExtendedVoteInfo(val1, map[string][]byte{}, veCodec)
 		s.Require().NoError(err)
 
 		extendedCommit := cometabci.ExtendedCommitInfo{
@@ -509,7 +509,7 @@ func (s *ProposalsTestSuite) TestPrepareProposalRetainOracleData() {
 		cpStrategy := currencypairmocks.NewCurrencyPairStrategy(s.T())
 		cpStrategy.On("GetMaxNumCP", mock.Anything).Return(uint64(0), nil).Once()
 
-		emptyVote, err := testutils.CreateExtendedVoteInfo(val1, map[uint64][]byte{}, veCodec)
+		emptyVote, err := testutils.CreateExtendedVoteInfo(val1, map[string][]byte{}, veCodec)
 		s.Require().NoError(err)
 
 		extendedCommit := cometabci.ExtendedCommitInfo{
@@ -984,7 +984,7 @@ func (s *ProposalsTestSuite) TestProposalLatency() {
 			metricsMocks,
 		)
 
-		vote, err := testutils.CreateExtendedVoteInfo(val1, map[uint64][]byte{}, codec.NewDefaultVoteExtensionCodec())
+		vote, err := testutils.CreateExtendedVoteInfo(val1, map[string][]byte{}, codec.NewDefaultVoteExtensionCodec())
 		s.Require().NoError(err)
 
 		req := s.createRequestPrepareProposal( // the votes here are invalid, but that's fine
@@ -1549,8 +1549,8 @@ func (s *ProposalsTestSuite) TestPruning() {
 		ve1, err := testutils.CreateExtendedVoteInfoWithPower(
 			val1,
 			33,
-			map[uint64][]byte{
-				1: twoHundred.Bytes(),
+			map[string][]byte{
+				"ETH/USD": twoHundred.Bytes(),
 			},
 			codec.NewDefaultVoteExtensionCodec(),
 		)
@@ -1559,8 +1559,8 @@ func (s *ProposalsTestSuite) TestPruning() {
 		ve2, err := testutils.CreateExtendedVoteInfoWithPower(
 			val2,
 			33,
-			map[uint64][]byte{
-				1: twoHundred.Bytes(),
+			map[string][]byte{
+				"ETH/USD": twoHundred.Bytes(),
 			},
 			codec.NewDefaultVoteExtensionCodec(),
 		)
@@ -1596,8 +1596,8 @@ func (s *ProposalsTestSuite) TestPruning() {
 		ve1, err := testutils.CreateExtendedVoteInfoWithPower(
 			val1,
 			33,
-			map[uint64][]byte{
-				1: twoHundred.Bytes(),
+			map[string][]byte{
+				"ETH/USD": twoHundred.Bytes(),
 			},
 			codec.NewDefaultVoteExtensionCodec(),
 		)
@@ -1606,9 +1606,9 @@ func (s *ProposalsTestSuite) TestPruning() {
 		ve2, err := testutils.CreateExtendedVoteInfoWithPower(
 			val2,
 			1,
-			map[uint64][]byte{
-				1: twoHundred.Bytes(),
-				2: twoHundred.Bytes(),
+			map[string][]byte{
+				"ETH/USD": twoHundred.Bytes(),
+				"ETH/BTC": twoHundred.Bytes(),
 			},
 			codec.NewDefaultVoteExtensionCodec(),
 		)
@@ -1617,8 +1617,8 @@ func (s *ProposalsTestSuite) TestPruning() {
 		ve3, err := testutils.CreateExtendedVoteInfoWithPower(
 			val3,
 			33,
-			map[uint64][]byte{
-				1: twoHundred.Bytes(),
+			map[string][]byte{
+				"ETH/USD": twoHundred.Bytes(),
 			},
 			codec.NewDefaultVoteExtensionCodec(),
 		)
@@ -1649,8 +1649,8 @@ func (s *ProposalsTestSuite) TestPruning() {
 		ve1, err := testutils.CreateExtendedVoteInfoWithPower(
 			val1,
 			33,
-			map[uint64][]byte{
-				1: twoHundred.Bytes(),
+			map[string][]byte{
+				"ETH/USD": twoHundred.Bytes(),
 			},
 			codec.NewDefaultVoteExtensionCodec(),
 		)
@@ -1659,9 +1659,9 @@ func (s *ProposalsTestSuite) TestPruning() {
 		ve2, err := testutils.CreateExtendedVoteInfoWithPower(
 			val2,
 			33,
-			map[uint64][]byte{
-				1: twoHundred.Bytes(),
-				2: twoHundred.Bytes(),
+			map[string][]byte{
+				"ETH/USD": twoHundred.Bytes(),
+				"ETH/BTC": twoHundred.Bytes(),
 			},
 			codec.NewDefaultVoteExtensionCodec(),
 		)
@@ -1670,8 +1670,8 @@ func (s *ProposalsTestSuite) TestPruning() {
 		ve3, err := testutils.CreateExtendedVoteInfoWithPower(
 			val3,
 			1,
-			map[uint64][]byte{
-				1: twoHundred.Bytes(),
+			map[string][]byte{
+				"ETH/USD": twoHundred.Bytes(),
 			},
 			codec.NewDefaultVoteExtensionCodec(),
 		)
@@ -1697,8 +1697,8 @@ func (s *ProposalsTestSuite) TestPruning() {
 		ve1, err := testutils.CreateExtendedVoteInfoWithPower(
 			val1,
 			33,
-			map[uint64][]byte{
-				1: twoHundred.Bytes(),
+			map[string][]byte{
+				"ETH/USD": twoHundred.Bytes(),
 			},
 			codec.NewDefaultVoteExtensionCodec(),
 		)
@@ -1707,9 +1707,9 @@ func (s *ProposalsTestSuite) TestPruning() {
 		ve2, err := testutils.CreateExtendedVoteInfoWithPower(
 			val2,
 			1,
-			map[uint64][]byte{
-				1: twoHundred.Bytes(),
-				2: twoHundred.Bytes(),
+			map[string][]byte{
+				"ETH/USD": twoHundred.Bytes(),
+				"ETH/BTC": twoHundred.Bytes(),
 			},
 			codec.NewDefaultVoteExtensionCodec(),
 		)
@@ -1718,8 +1718,8 @@ func (s *ProposalsTestSuite) TestPruning() {
 		ve3, err := testutils.CreateExtendedVoteInfoWithPower(
 			val3,
 			33,
-			map[uint64][]byte{
-				1: twoHundred.Bytes(),
+			map[string][]byte{
+				"ETH/USD": twoHundred.Bytes(),
 			},
 			codec.NewDefaultVoteExtensionCodec(),
 		)

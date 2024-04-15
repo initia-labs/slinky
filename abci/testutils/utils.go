@@ -54,7 +54,7 @@ func CreateExtendedCommitInfo(commitInfo []cometabci.ExtendedVoteInfo, codec com
 // CreateExtendedVoteInfo creates an extended vote info with the given prices, timestamp and height.
 func CreateExtendedVoteInfo(
 	consAddr sdk.ConsAddress,
-	prices map[uint64][]byte,
+	prices map[string][]byte,
 	codec compression.VoteExtensionCodec,
 ) (cometabci.ExtendedVoteInfo, error) {
 	return CreateExtendedVoteInfoWithPower(consAddr, 1, prices, codec)
@@ -65,7 +65,7 @@ func CreateExtendedVoteInfo(
 func CreateExtendedVoteInfoWithPower(
 	consAddr sdk.ConsAddress,
 	power int64,
-	prices map[uint64][]byte,
+	prices map[string][]byte,
 	codec compression.VoteExtensionCodec,
 ) (cometabci.ExtendedVoteInfo, error) {
 	ve, err := CreateVoteExtensionBytes(prices, codec)
@@ -127,7 +127,7 @@ func CreateBaseSDKContext(t *testing.T) sdk.Context {
 
 // CreateVoteExtensionBytes creates a vote extension bytes with the given prices, timestamp and height.
 func CreateVoteExtensionBytes(
-	prices map[uint64][]byte,
+	prices map[string][]byte,
 	codec compression.VoteExtensionCodec,
 ) ([]byte, error) {
 	voteExtension := CreateVoteExtension(prices)
@@ -141,7 +141,7 @@ func CreateVoteExtensionBytes(
 
 // CreateVoteExtension creates a vote extension with the given prices, timestamp and height.
 func CreateVoteExtension(
-	prices map[uint64][]byte,
+	prices map[string][]byte,
 ) types.OracleVoteExtension {
 	return types.OracleVoteExtension{
 		Prices: prices,

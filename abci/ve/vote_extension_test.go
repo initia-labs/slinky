@@ -120,8 +120,8 @@ func (s *VoteExtensionTestSuite) TestExtendVoteExtension() {
 				return cps
 			},
 			expectedResponse: &abcitypes.OracleVoteExtension{
-				Prices: map[uint64][]byte{
-					0: oneHundred.Bytes(),
+				Prices: map[string][]byte{
+					"BTC/USD": oneHundred.Bytes(),
 				},
 			},
 		},
@@ -151,9 +151,9 @@ func (s *VoteExtensionTestSuite) TestExtendVoteExtension() {
 				return cps
 			},
 			expectedResponse: &abcitypes.OracleVoteExtension{
-				Prices: map[uint64][]byte{
-					0: oneHundred.Bytes(),
-					1: twoHundred.Bytes(),
+				Prices: map[string][]byte{
+					"BTC/USD": oneHundred.Bytes(),
+					"ETH/USD": twoHundred.Bytes(),
 				},
 			},
 		},
@@ -236,8 +236,8 @@ func (s *VoteExtensionTestSuite) TestExtendVoteExtension() {
 				return cps
 			},
 			expectedResponse: &abcitypes.OracleVoteExtension{
-				Prices: map[uint64][]byte{
-					1: twoHundred.Bytes(),
+				Prices: map[string][]byte{
+					"ETH/USD": twoHundred.Bytes(),
 				},
 			},
 		},
@@ -267,8 +267,8 @@ func (s *VoteExtensionTestSuite) TestExtendVoteExtension() {
 				return cps
 			},
 			expectedResponse: &abcitypes.OracleVoteExtension{
-				Prices: map[uint64][]byte{
-					1: twoHundred.Bytes(),
+				Prices: map[string][]byte{
+					"ETH/USD": twoHundred.Bytes(),
 				},
 			},
 		},
@@ -385,9 +385,9 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtension() {
 		{
 			name: "valid vote extension - 2 cp in prev state",
 			getReq: func() *cometabci.RequestVerifyVoteExtension {
-				prices := map[uint64][]byte{
-					0: oneHundred.Bytes(),
-					1: twoHundred.Bytes(),
+				prices := map[string][]byte{
+					"BTC/USD": oneHundred.Bytes(),
+					"ETH/USD": twoHundred.Bytes(),
 				}
 
 				ext, err := testutils.CreateVoteExtensionBytes(
@@ -414,9 +414,9 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtension() {
 		{
 			name: "invalid vote extension - 1 cp in prev state - should fail",
 			getReq: func() *cometabci.RequestVerifyVoteExtension {
-				prices := map[uint64][]byte{
-					0: oneHundred.Bytes(),
-					1: twoHundred.Bytes(),
+				prices := map[string][]byte{
+					"BTC/USD": oneHundred.Bytes(),
+					"ETH/USD": twoHundred.Bytes(),
 				}
 
 				ext, err := testutils.CreateVoteExtensionBytes(
@@ -443,7 +443,7 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtension() {
 		{
 			name: "vote extension with no prices",
 			getReq: func() *cometabci.RequestVerifyVoteExtension {
-				prices := map[uint64][]byte{}
+				prices := map[string][]byte{}
 
 				ext, err := testutils.CreateVoteExtensionBytes(
 					prices,
@@ -469,8 +469,8 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtension() {
 		{
 			name: "vote extension with malformed prices",
 			getReq: func() *cometabci.RequestVerifyVoteExtension {
-				prices := map[uint64][]byte{
-					0: make([]byte, 34),
+				prices := map[string][]byte{
+					"BTC/USD": make([]byte, 34),
 				}
 
 				ext, err := testutils.CreateVoteExtensionBytes(
@@ -707,7 +707,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 			Prices: map[string]string{},
 		}, nil)
 		cdc.On("Encode", abcitypes.OracleVoteExtension{
-			Prices: map[uint64][]byte{},
+			Prices: map[string][]byte{},
 		}).Return(nil, codecError)
 
 		_, err := handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{})
@@ -735,7 +735,7 @@ func (s *VoteExtensionTestSuite) TestExtendVoteStatus() {
 			Prices: map[string]string{},
 		}, nil)
 		cdc.On("Encode", abcitypes.OracleVoteExtension{
-			Prices: map[uint64][]byte{},
+			Prices: map[string][]byte{},
 		}).Return(nil, nil)
 
 		_, err := handler.ExtendVoteHandler()(s.ctx, &cometabci.RequestExtendVote{})
@@ -815,8 +815,8 @@ func (s *VoteExtensionTestSuite) TestVerifyVoteExtensionStatus() {
 		mockMetrics.On("ObserveABCIMethodLatency", servicemetrics.VerifyVoteExtension, mock.Anything)
 		mockMetrics.On("AddABCIRequest", servicemetrics.VerifyVoteExtension, expErr)
 		cdc.On("Decode", mock.Anything).Return(abcitypes.OracleVoteExtension{
-			Prices: map[uint64][]byte{
-				1: make([]byte, length),
+			Prices: map[string][]byte{
+				"": make([]byte, length),
 			},
 		}, nil)
 
@@ -884,7 +884,7 @@ func (s *VoteExtensionTestSuite) TestVoteExtensionSize() {
 
 	// mock codec calls
 	cdc.On("Decode", mock.Anything).Return(abcitypes.OracleVoteExtension{
-		Prices: map[uint64][]byte{},
+		Prices: map[string][]byte{},
 	}, nil)
 
 	_, err := handler.VerifyVoteExtensionHandler()(s.ctx, &cometabci.RequestVerifyVoteExtension{

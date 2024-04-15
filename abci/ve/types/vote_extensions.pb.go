@@ -27,7 +27,7 @@ type OracleVoteExtension struct {
 	// Prices defines a map of id(CurrencyPair) -> price.Bytes() . i.e. 1 ->
 	// 0x123.. (bytes). Notice the `id` function is determined by the
 	// `CurrencyPairIDStrategy` used in the VoteExtensionHandler.
-	Prices map[uint64][]byte `protobuf:"bytes,1,rep,name=prices,proto3" json:"prices,omitempty" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Prices map[string][]byte `protobuf:"bytes,1,rep,name=prices,proto3" json:"prices,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
 func (m *OracleVoteExtension) Reset()         { *m = OracleVoteExtension{} }
@@ -63,7 +63,7 @@ func (m *OracleVoteExtension) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_OracleVoteExtension proto.InternalMessageInfo
 
-func (m *OracleVoteExtension) GetPrices() map[uint64][]byte {
+func (m *OracleVoteExtension) GetPrices() map[string][]byte {
 	if m != nil {
 		return m.Prices
 	}
@@ -72,7 +72,7 @@ func (m *OracleVoteExtension) GetPrices() map[uint64][]byte {
 
 func init() {
 	proto.RegisterType((*OracleVoteExtension)(nil), "slinky.abci.v1.OracleVoteExtension")
-	proto.RegisterMapType((map[uint64][]byte)(nil), "slinky.abci.v1.OracleVoteExtension.PricesEntry")
+	proto.RegisterMapType((map[string][]byte)(nil), "slinky.abci.v1.OracleVoteExtension.PricesEntry")
 }
 
 func init() {
@@ -89,13 +89,13 @@ var fileDescriptor_cca9d70763a0957a = []byte{
 	0x56, 0x50, 0x94, 0x99, 0x9c, 0x5a, 0x2c, 0xc1, 0xa8, 0xc0, 0xac, 0xc1, 0x6d, 0xa4, 0xaf, 0x87,
 	0xaa, 0x51, 0x0f, 0x8b, 0x26, 0xbd, 0x00, 0xb0, 0x0e, 0xd7, 0xbc, 0x92, 0xa2, 0xca, 0x20, 0xa8,
 	0x76, 0x29, 0x4b, 0x2e, 0x6e, 0x24, 0x61, 0x21, 0x01, 0x2e, 0xe6, 0xec, 0xd4, 0x4a, 0x09, 0x46,
-	0x05, 0x46, 0x0d, 0x96, 0x20, 0x10, 0x53, 0x48, 0x84, 0x8b, 0xb5, 0x2c, 0x31, 0xa7, 0x34, 0x55,
+	0x05, 0x46, 0x0d, 0xce, 0x20, 0x10, 0x53, 0x48, 0x84, 0x8b, 0xb5, 0x2c, 0x31, 0xa7, 0x34, 0x55,
 	0x82, 0x49, 0x81, 0x51, 0x83, 0x27, 0x08, 0xc2, 0xb1, 0x62, 0xb2, 0x60, 0x74, 0x72, 0x3a, 0xf1,
 	0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63, 0xb8,
 	0xf0, 0x58, 0x8e, 0xe1, 0xc6, 0x63, 0x39, 0x86, 0x28, 0x8d, 0xf4, 0xcc, 0x92, 0x8c, 0xd2, 0x24,
 	0xbd, 0xe4, 0xfc, 0x5c, 0xfd, 0xe2, 0xec, 0xcc, 0x02, 0xdd, 0xdc, 0xd4, 0x32, 0x7d, 0x14, 0xff,
 	0xa7, 0xea, 0x97, 0x54, 0x16, 0xa4, 0x16, 0x27, 0xb1, 0x81, 0xbd, 0x6d, 0x0c, 0x08, 0x00, 0x00,
-	0xff, 0xff, 0x61, 0x40, 0x8e, 0x51, 0x1e, 0x01, 0x00, 0x00,
+	0xff, 0xff, 0x3e, 0x94, 0xee, 0xbc, 0x1e, 0x01, 0x00, 0x00,
 }
 
 func (m *OracleVoteExtension) Marshal() (dAtA []byte, err error) {
@@ -129,9 +129,11 @@ func (m *OracleVoteExtension) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 				i--
 				dAtA[i] = 0x12
 			}
-			i = encodeVarintVoteExtensions(dAtA, i, uint64(k))
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintVoteExtensions(dAtA, i, uint64(len(k)))
 			i--
-			dAtA[i] = 0x8
+			dAtA[i] = 0xa
 			i = encodeVarintVoteExtensions(dAtA, i, uint64(baseI-i))
 			i--
 			dAtA[i] = 0xa
@@ -165,7 +167,7 @@ func (m *OracleVoteExtension) Size() (n int) {
 			if len(v) > 0 {
 				l = 1 + len(v) + sovVoteExtensions(uint64(len(v)))
 			}
-			mapEntrySize := 1 + sovVoteExtensions(uint64(k)) + l
+			mapEntrySize := 1 + len(k) + sovVoteExtensions(uint64(len(k))) + l
 			n += mapEntrySize + 1 + sovVoteExtensions(uint64(mapEntrySize))
 		}
 	}
@@ -237,9 +239,9 @@ func (m *OracleVoteExtension) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Prices == nil {
-				m.Prices = make(map[uint64][]byte)
+				m.Prices = make(map[string][]byte)
 			}
-			var mapkey uint64
+			var mapkey string
 			mapvalue := []byte{}
 			for iNdEx < postIndex {
 				entryPreIndex := iNdEx
@@ -260,6 +262,7 @@ func (m *OracleVoteExtension) Unmarshal(dAtA []byte) error {
 				}
 				fieldNum := int32(wire >> 3)
 				if fieldNum == 1 {
+					var stringLenmapkey uint64
 					for shift := uint(0); ; shift += 7 {
 						if shift >= 64 {
 							return ErrIntOverflowVoteExtensions
@@ -269,11 +272,24 @@ func (m *OracleVoteExtension) Unmarshal(dAtA []byte) error {
 						}
 						b := dAtA[iNdEx]
 						iNdEx++
-						mapkey |= uint64(b&0x7F) << shift
+						stringLenmapkey |= uint64(b&0x7F) << shift
 						if b < 0x80 {
 							break
 						}
 					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthVoteExtensions
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthVoteExtensions
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
 				} else if fieldNum == 2 {
 					var mapbyteLen uint64
 					for shift := uint(0); ; shift += 7 {

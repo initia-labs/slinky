@@ -8,5 +8,5 @@ message OracleVoteExtension {
   // Prices defines a map of id(CurrencyPair) -> price.Bytes() . i.e. 1 ->
   // 0x123.. (bytes). Notice the `id` function is determined by the
   // `CurrencyPairIDStrategy` used in the VoteExtensionHandler.
-  map<uint64, bytes> prices = 1;
+  map<string, bytes> prices = 1;
 }

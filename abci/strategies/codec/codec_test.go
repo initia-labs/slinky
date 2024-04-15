@@ -1,6 +1,7 @@
 package codec_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -15,9 +16,9 @@ func TestDefaultVoteExtensionCodec(t *testing.T) {
 	t.Run("test encoding / decoding", func(t *testing.T) {
 		// create a sample vote extension
 		ve := vetypes.OracleVoteExtension{
-			Prices: map[uint64][]byte{
-				1: []byte("1"),
-				2: []byte("2"),
+			Prices: map[string][]byte{
+				"BTC/USD": []byte("1"),
+				"ETH/USD": []byte("2"),
 			},
 		}
 		// encode it
@@ -45,12 +46,12 @@ func TestCompressionVoteExtensionCodec(t *testing.T) {
 		// create a sample vote extension
 		samplePrice := []byte("nocapongodskiptoonicewititshiiiiiiiii")
 		ve := vetypes.OracleVoteExtension{
-			Prices: make(map[uint64][]byte),
+			Prices: make(map[string][]byte),
 		}
 
 		// add 200 prices
 		for i := uint64(0); i < 200; i++ {
-			ve.Prices[i] = samplePrice
+			ve.Prices[fmt.Sprintf("%d", i)] = samplePrice
 		}
 
 		// create a codec

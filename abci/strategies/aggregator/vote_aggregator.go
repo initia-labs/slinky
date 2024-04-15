@@ -156,23 +156,31 @@ func (dva *DefaultVoteAggregator) addVoteToAggregator(ctx sdk.Context, address s
 
 	// Format all prices into a map of currency pair -> price.
 	prices := make(map[slinkytypes.CurrencyPair]*big.Int, len(oracleData.Prices))
-	for cpID, priceBz := range oracleData.Prices {
+	for currencyPairID, priceBz := range oracleData.Prices {
 		if len(priceBz) > slinkyabci.MaximumPriceSize {
 			return fmt.Errorf("price bytes are too long: %d", len(priceBz))
 		}
 
 		// Convert the asset into a currency pair.
-		cp, err := dva.currencyPairStrategy.FromID(ctx, cpID)
+		cp, err := slinkytypes.CurrencyPairFromString(currencyPairID)
 		if err != nil {
 			dva.logger.Debug(
 				"failed to convert currency pair id to currency pair",
-				"currency_pair_id", cpID,
+				"currency_pair_id", currencyPairID,
+				"err", err,
+			)
+			continue
+		}
+
+		// Determine if the currency pair is supported by the network.
+		_, err = dva.currencyPairStrategy.ID(ctx, cp)
+		if err != nil {
+			dva.logger.Debug(
+				"failed to get currency pair ID",
+				"currency_pair", cp,
 				"err", err,
 			)
 
-			// If the currency pair is not supported, continue.
-			//
-			// TODO: Should we return an error here instead?
 			continue
 		}
 
@@ -180,7 +188,7 @@ func (dva *DefaultVoteAggregator) addVoteToAggregator(ctx sdk.Context, address s
 		if err != nil {
 			dva.logger.Debug(
 				"failed to decode price",
-				"currency_pair_id", cpID,
+				"currency_pair_id", currencyPairID,
 				"err", err,
 			)
 

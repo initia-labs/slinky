@@ -352,8 +352,8 @@ func (s *PreBlockTestSuite) TestPreBlockStatus() {
 			},
 		}, nil)
 		veCodec.On("Decode", []byte("ve")).Return(vetypes.OracleVoteExtension{
-			Prices: map[uint64][]byte{
-				1: make([]byte, 34),
+			Prices: map[string][]byte{
+				"ETH/USD": make([]byte, 34),
 			},
 		}, nil)
 		expErr := preblock.PriceAggregationError{
@@ -483,14 +483,14 @@ func (s *PreBlockTestSuite) TestValidatorReports() {
 		mockOracleKeeper.On("SetPriceForCurrencyPair", s.ctx, mogUsd, mock.Anything).Return(nil)
 
 		// create extended commit info
-		val1Vote, err := testutils.CreateExtendedVoteInfo(val1, map[uint64][]byte{
-			0: big.NewInt(1).Bytes(),
-			1: maxUint256.Bytes(),
+		val1Vote, err := testutils.CreateExtendedVoteInfo(val1, map[string][]byte{
+			"BTC/USD": big.NewInt(1).Bytes(),
+			"MOG/USD": maxUint256.Bytes(),
 		}, compression.NewDefaultVoteExtensionCodec())
 		s.Require().NoError(err)
 
-		val2Vote, err := testutils.CreateExtendedVoteInfo(val2, map[uint64][]byte{
-			0: big.NewInt(2).Bytes(),
+		val2Vote, err := testutils.CreateExtendedVoteInfo(val2, map[string][]byte{
+			"BTC/USD": big.NewInt(2).Bytes(),
 		}, compression.NewDefaultVoteExtensionCodec())
 		s.Require().NoError(err)
 

@@ -18,7 +18,7 @@ import (
 // NOTICE: no signature checks are performed on the vote-extension, as it is expected that the caller has verified the
 // ExtendedVoteInfo's signature before calling this function.
 func DefaultHandleValidatorIncentive() ValidatorIncentiveHandler {
-	return func(ve cmtabci.ExtendedVoteInfo, pb types.PriceBound, a types.Alert, cpID uint64) (incentivetypes.Incentive, error) {
+	return func(ve cmtabci.ExtendedVoteInfo, pb types.PriceBound, a types.Alert, cpID string) (incentivetypes.Incentive, error) {
 		// validate the alert
 		if err := a.ValidateBasic(); err != nil {
 			return nil, err

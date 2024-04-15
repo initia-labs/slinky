@@ -277,7 +277,7 @@ func (h *VoteExtensionHandler) VerifyVoteExtensionHandler() sdk.VerifyVoteExtens
 // does this by iterating over the prices submitted by the oracle service and determining the
 // correct decoded price / ID based on the currency pair strategy.
 func (h *VoteExtensionHandler) transformOracleServicePrices(ctx sdk.Context, prices map[string]string) (types.OracleVoteExtension, error) {
-	strategyPrices := make(map[uint64][]byte)
+	strategyPrices := make(map[string][]byte)
 
 	// Iterate over the prices and transform them into the correct format.
 	for currencyPairID, priceString := range prices {
@@ -292,7 +292,7 @@ func (h *VoteExtensionHandler) transformOracleServicePrices(ctx sdk.Context, pri
 		}
 
 		// Determine if the currency pair is supported by the network.
-		cpID, err := h.currencyPairStrategy.ID(ctx, cp)
+		_, err = h.currencyPairStrategy.ID(ctx, cp)
 		if err != nil {
 			h.logger.Debug(
 				"failed to get currency pair ID",
@@ -321,7 +321,7 @@ func (h *VoteExtensionHandler) transformOracleServicePrices(ctx sdk.Context, pri
 			"height", ctx.BlockHeight(),
 		)
 
-		strategyPrices[cpID] = encodedPrice
+		strategyPrices[currencyPairID] = encodedPrice
 	}
 
 	h.logger.Info("transformed oracle prices", "prices", len(strategyPrices))

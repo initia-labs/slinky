@@ -9,16 +9,13 @@ import (
 )
 
 // getStatuses returns the price feed status updates for each currency pair.
-func getStatuses(ctx sdk.Context, currencyPairIDStrategy currencypair.CurrencyPairStrategy, currencyPairs []slinkytypes.CurrencyPair, prices map[uint64][]byte) map[slinkytypes.CurrencyPair]slatypes.UpdateStatus {
+func getStatuses(ctx sdk.Context, currencyPairIDStrategy currencypair.CurrencyPairStrategy, currencyPairs []slinkytypes.CurrencyPair, prices map[string][]byte) map[slinkytypes.CurrencyPair]slatypes.UpdateStatus {
 	validatorUpdates := make(map[slinkytypes.CurrencyPair]slatypes.UpdateStatus)
 
 	for _, cp := range currencyPairs {
-		id, err := currencyPairIDStrategy.ID(ctx, cp)
-		if err != nil {
-			continue
-		}
+		currencyPairID := cp.String()
 
-		if _, ok := prices[id]; !ok {
+		if _, ok := prices[currencyPairID]; !ok {
 			validatorUpdates[cp] = slatypes.VoteWithoutPrice
 		} else {
 			validatorUpdates[cp] = slatypes.VoteWithPrice

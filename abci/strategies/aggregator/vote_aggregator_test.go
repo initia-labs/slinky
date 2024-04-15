@@ -114,8 +114,8 @@ func (s *VoteAggregatorTestSuite) TestAggregateOracleVotes() {
 
 	s.Run("single oracle data", func() {
 		// Create a single vote extension from my validator
-		myValPrices := map[uint64][]byte{
-			0: oneHundred.Bytes(),
+		myValPrices := map[string][]byte{
+			"BTC/USD": oneHundred.Bytes(),
 		}
 		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, s.veCodec)
 		s.Require().NoError(err)
@@ -151,9 +151,9 @@ func (s *VoteAggregatorTestSuite) TestAggregateOracleVotes() {
 
 	s.Run("multiple prices from a single validator", func() {
 		// Create a single vote extension from my validator
-		myValPrices := map[uint64][]byte{
-			0: oneHundred.Bytes(),
-			1: twoHundred.Bytes(),
+		myValPrices := map[string][]byte{
+			"BTC/USD": oneHundred.Bytes(),
+			"ETH/USD": twoHundred.Bytes(),
 		}
 		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, s.veCodec)
 		s.Require().NoError(err)
@@ -193,15 +193,15 @@ func (s *VoteAggregatorTestSuite) TestAggregateOracleVotes() {
 
 	s.Run("single price from two different validators", func() {
 		// Create a single vote extension from my validator
-		myValPrices := map[uint64][]byte{
-			0: oneHundred.Bytes(),
+		myValPrices := map[string][]byte{
+			"BTC/USD": oneHundred.Bytes(),
 		}
 		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, s.veCodec)
 		s.Require().NoError(err)
 
 		// Create a single vote extension from another validator
-		otherValPrices := map[uint64][]byte{
-			0: twoHundred.Bytes(),
+		otherValPrices := map[string][]byte{
+			"BTC/USD": twoHundred.Bytes(),
 		}
 		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices, s.veCodec)
 		s.Require().NoError(err)
@@ -245,15 +245,15 @@ func (s *VoteAggregatorTestSuite) TestAggregateOracleVotes() {
 
 	s.Run("single price update from multiple validators but not enough voting power", func() {
 		// Create a single vote extension from my validator
-		myValPrices := map[uint64][]byte{
-			0: oneHundred.Bytes(),
+		myValPrices := map[string][]byte{
+			"BTC/USD": oneHundred.Bytes(),
 		}
 		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, s.veCodec)
 		s.Require().NoError(err)
 
 		// Create a single vote extension from another validator
-		otherValPrices := map[uint64][]byte{
-			0: twoHundred.Bytes(),
+		otherValPrices := map[string][]byte{
+			"BTC/USD": twoHundred.Bytes(),
 		}
 		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices, s.veCodec)
 		s.Require().NoError(err)
@@ -294,17 +294,17 @@ func (s *VoteAggregatorTestSuite) TestAggregateOracleVotes() {
 
 	s.Run("multiple prices from multiple validators", func() {
 		// Create a vote extension with multiple prices from my validator
-		myValPrices := map[uint64][]byte{
-			0: oneHundred.Bytes(),
-			1: twoHundred.Bytes(),
+		myValPrices := map[string][]byte{
+			"BTC/USD": oneHundred.Bytes(),
+			"ETH/USD": twoHundred.Bytes(),
 		}
 		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, s.veCodec)
 		s.Require().NoError(err)
 
 		// Create a vote extension with multiple prices from another validator
-		otherValPrices := map[uint64][]byte{
-			0: threeHundred.Bytes(),
-			1: fourHundred.Bytes(),
+		otherValPrices := map[string][]byte{
+			"BTC/USD": threeHundred.Bytes(),
+			"ETH/USD": fourHundred.Bytes(),
 		}
 		otherValVoteInfo, err := testutils.CreateExtendedVoteInfo(val1, otherValPrices, s.veCodec)
 		s.Require().NoError(err)
@@ -353,25 +353,25 @@ func (s *VoteAggregatorTestSuite) TestAggregateOracleVotes() {
 	})
 
 	s.Run("multiple prices from multiple validators but not enough voting power for some", func() {
-		myValPrices := map[uint64][]byte{
-			0: oneHundred.Bytes(),
-			1: twoHundred.Bytes(),
-			2: threeHundred.Bytes(),
+		myValPrices := map[string][]byte{
+			"BTC/USD": oneHundred.Bytes(),
+			"ETH/USD": twoHundred.Bytes(),
+			"ETH/BTC": threeHundred.Bytes(),
 		}
 		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, s.veCodec)
 		s.Require().NoError(err)
 
-		val1Prices := map[uint64][]byte{
-			0: fourHundred.Bytes(),
-			2: sixHundred.Bytes(),
+		val1Prices := map[string][]byte{
+			"BTC/USD": fourHundred.Bytes(),
+			"ETH/BTC": sixHundred.Bytes(),
 		}
 		val1VoteInfo, err := testutils.CreateExtendedVoteInfo(val1, val1Prices, s.veCodec)
 		s.Require().NoError(err)
 
-		val2Prices := map[uint64][]byte{
-			0: sevenHundred.Bytes(),
-			1: eightHundred.Bytes(),
-			2: nineHundred.Bytes(),
+		val2Prices := map[string][]byte{
+			"BTC/USD": sevenHundred.Bytes(),
+			"ETH/USD": eightHundred.Bytes(),
+			"ETH/BTC": nineHundred.Bytes(),
 		}
 		val2VoteInfo, err := testutils.CreateExtendedVoteInfo(val2, val2Prices, s.veCodec)
 		s.Require().NoError(err)
@@ -434,8 +434,8 @@ func (s *VoteAggregatorTestSuite) TestAggregateOracleVotes() {
 
 	s.Run("errors when the validator's prices are malformed", func() {
 		// Create a single vote extension from my validator
-		myValPrices := map[uint64][]byte{
-			0: ongodhecappin,
+		myValPrices := map[string][]byte{
+			"BTC/USD": ongodhecappin,
 		}
 		valVoteInfo, err := testutils.CreateExtendedVoteInfo(s.myVal, myValPrices, s.veCodec)
 		s.Require().NoError(err)
