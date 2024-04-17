@@ -12,6 +12,16 @@ import (
 	"github.com/skip-mev/slinky/x/oracle/types"
 )
 
+func (s *KeeperTestSuite) TestDefaultInitGenesis() {
+	cp, err := slinkytypes.CurrencyPairFromString(types.ReservedCPTimestamp)
+	s.Require().NoError(err)
+
+	id, ok := s.oracleKeeper.GetIDForCurrencyPair(s.ctx, cp)
+	s.Require().True(ok)
+
+	s.Require().Equal(id, types.CurrencyPairToID(types.ReservedCPTimestamp))
+}
+
 func (s *KeeperTestSuite) TestInitGenesis() {
 	tcs := []struct {
 		name       string

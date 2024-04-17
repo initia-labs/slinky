@@ -34,6 +34,15 @@ func (k *Keeper) InitGenesis(ctx sdk.Context, gs types.GenesisState) {
 	if err := k.numRemoves.Set(ctx, 0); err != nil {
 		panic(fmt.Errorf("error in genesis: %w", err))
 	}
+
+	cp, err := slinkytypes.CurrencyPairFromString(types.ReservedCPTimestamp)
+	if err != nil {
+		panic(fmt.Errorf("failed to parse reserved timestamp currency pair: %w", err))
+	}
+	err = k.CreateCurrencyPair(ctx, cp)
+	if err != nil {
+		panic(fmt.Errorf("failed to make reserved timestamp currency pair: %w", err))
+	}
 }
 
 // ExportGenesis retrieve all CurrencyPairs + QuotePrices set for the module, and return them as a genesis state.

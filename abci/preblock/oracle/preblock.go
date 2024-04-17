@@ -17,6 +17,8 @@ import (
 	"github.com/skip-mev/slinky/aggregator"
 	slinkytypes "github.com/skip-mev/slinky/pkg/types"
 	servicemetrics "github.com/skip-mev/slinky/service/metrics"
+
+	oracletypes "github.com/skip-mev/slinky/x/oracle/types"
 )
 
 // PreBlockHandler is responsible for aggregating oracle data from each
@@ -154,6 +156,13 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 			}
 			return &sdk.ResponsePreBlock{}, err
 		}
+
+		tsCp, err := slinkytypes.CurrencyPairFromString(oracletypes.ReservedCPTimestamp)
+		if err != nil {
+			return &sdk.ResponsePreBlock{}, err
+		}
+
+		ctx = ctx.WithBlockTime(time.Unix(0, prices[tsCp].Int64()))
 
 		// Write the oracle data to the store.
 		if err := h.WritePrices(ctx, prices); err != nil {
