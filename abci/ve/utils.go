@@ -282,3 +282,119 @@ func ValidateExtendedCommitAgainstLastCommit(ec cometabci.ExtendedCommitInfo, lc
 
 	return nil
 }
+
+// Initia custom
+func ValidateVoteExtensionsFromL1(
+	ctx sdk.Context,
+	valStore ValidatorStore,
+	height int64,
+	chainID string,
+	extCommit cometabci.ExtendedCommitInfo,
+) error {
+	// Start checking vote extensions only **after** the vote extensions enable
+	// height, because when `currentHeight == VoteExtensionsEnableHeight`
+	// PrepareProposal doesn't get any vote extensions in its request.
+	extensionsEnabled := VoteExtensionsEnabled(ctx)
+	marshalDelimitedFn := func(msg proto.Message) ([]byte, error) {
+		var buf bytes.Buffer
+		if err := protoio.NewDelimitedWriter(&buf).WriteMsg(msg); err != nil {
+			return nil, err
+		}
+
+		return buf.Bytes(), nil
+	}
+
+	var (
+		// Total voting power of all vote extensions.
+		totalVP int64
+		// Total voting power of all validators that submitted valid vote extensions.
+		sumVP int64
+	)
+
+	for _, vote := range extCommit.Votes {
+		totalVP += vote.Validator.Power
+
+		if extensionsEnabled {
+			if vote.BlockIdFlag == cmtproto.BlockIDFlagCommit && len(vote.ExtensionSignature) == 0 {
+				return fmt.Errorf("vote extension signature is missing; validator addr %s",
+					vote.Validator.String(),
+				)
+			}
+			if vote.BlockIdFlag != cmtproto.BlockIDFlagCommit && len(vote.VoteExtension) != 0 {
+				return fmt.Errorf("non-commit vote extension present; validator addr %s",
+					vote.Validator.String(),
+				)
+			}
+			if vote.BlockIdFlag != cmtproto.BlockIDFlagCommit && len(vote.ExtensionSignature) != 0 {
+				return fmt.Errorf("non-commit vote extension signature present; validator addr %s",
+					vote.Validator.String(),
+				)
+			}
+		} else { // vote extensions disabled
+			if len(vote.VoteExtension) != 0 {
+				return fmt.Errorf("vote extension present but extensions disabled; validator addr %s",
+					vote.Validator.String(),
+				)
+			}
+			if len(vote.ExtensionSignature) != 0 {
+				return fmt.Errorf("vote extension signature present but extensions disabled; validator addr %s",
+					vote.Validator.String(),
+				)
+			}
+
+			continue
+		}
+
+		// Only check + include power if the vote is a commit vote. There must be super-majority, otherwise the
+		// previous block (the block vote is for) could not have been committed.
+		if vote.BlockIdFlag != cmtproto.BlockIDFlagCommit {
+			continue
+		}
+
+		valConsAddr := sdk.ConsAddress(vote.Validator.Address)
+		pubKeyProto, err := valStore.GetPubKeyByConsAddr(ctx, valConsAddr)
+		if err != nil {
+			return fmt.Errorf("failed to get validator %X public key: %w", valConsAddr, err)
+		}
+
+		cmtPubKey, err := cryptoenc.PubKeyFromProto(pubKeyProto)
+		if err != nil {
+			return fmt.Errorf("failed to convert validator %X public key: %w", valConsAddr, err)
+		}
+
+		cve := cmtproto.CanonicalVoteExtension{
+			Extension: vote.VoteExtension,
+			Height:    height,
+			Round:     int64(extCommit.Round),
+			ChainId:   chainID,
+		}
+
+		extSignBytes, err := marshalDelimitedFn(&cve)
+		if err != nil {
+			return fmt.Errorf("failed to encode CanonicalVoteExtension: %w", err)
+		}
+
+		if !cmtPubKey.VerifySignature(extSignBytes, vote.ExtensionSignature) {
+			return fmt.Errorf("failed to verify validator %X vote extension signature", valConsAddr)
+		}
+
+		sumVP += vote.Validator.Power
+	}
+
+	// This check is probably unnecessary, but better safe than sorry.
+	if totalVP <= 0 {
+		return fmt.Errorf("total voting power must be positive, got: %d", totalVP)
+	}
+
+	if extensionsEnabled {
+		// If the sum of the voting power has not reached (2/3 + 1) we need to error.
+		if requiredVP := ((totalVP * 2) / 3) + 1; sumVP < requiredVP {
+			return fmt.Errorf(
+				"insufficient cumulative voting power received to verify vote extensions; got: %d, expected: >=%d",
+				sumVP, requiredVP,
+			)
+		}
+	}
+
+	return nil
+}
