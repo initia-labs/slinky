@@ -185,6 +185,9 @@ func (k *Keeper) SetPriceForCurrencyPair(ctx sdk.Context, cp slinkytypes.Currenc
 		id := types.CurrencyPairToID(cp.String())
 		cps = types.NewCurrencyPairState(id, 0, &qp)
 	} else {
+		if !qp.BlockTimestamp.After(cps.Price.BlockTimestamp) {
+			return errors.New("try to update the past price")
+		}
 		// update the nonce
 		cps.Nonce++
 		cps.Price = &qp
