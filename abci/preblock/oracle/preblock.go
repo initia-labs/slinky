@@ -1,7 +1,6 @@
 package oracle
 
 import (
-	"errors"
 	"fmt"
 	"math/big"
 	"time"
@@ -163,7 +162,8 @@ func (h *PreBlockHandler) PreBlocker() sdk.PreBlocker {
 			return &sdk.ResponsePreBlock{}, err
 		}
 		if _, ok := prices[tsCp]; !ok {
-			return &sdk.ResponsePreBlock{}, errors.New("no existing timestamp in extended vote")
+			// no error return, just no update price
+			return &sdk.ResponsePreBlock{}, nil
 		}
 
 		ctx = ctx.WithBlockTime(time.Unix(0, prices[tsCp].Int64()))
